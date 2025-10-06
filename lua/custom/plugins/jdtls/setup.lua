@@ -1,10 +1,11 @@
-return {
+require('lazy').setup {
   {
     'mfussenegger/nvim-jdtls',
     ft = { 'java' },
     config = function()
       local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
       local workspace_dir = '/home/jirka/development/jdtls_data/' .. project_name
+      local lombok_path = '/home/jirka/.local/share/lombok/lombok.jar'
       local config = {
         -- The command that starts the language server
         -- See: https://github.com/eclipse/eclipse.jdt.ls#running-from-the-command-line
@@ -30,7 +31,7 @@ return {
           -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                       ^^^^^^^^^^^^^^
           -- Must point to the                                                     Change this to
           -- eclipse.jdt.ls installation                                           the actual version
-
+          '-javaagent:' .. lombok_path,
           -- 💀
           '-configuration',
           '/home/jirka/.local/share/nvim/mason/packages/jdtls/config_linux',
@@ -53,7 +54,11 @@ return {
         -- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
         -- for a list of options
         settings = {
-          java = {},
+          java = {
+            compilation = {
+              annotationProcessing = { enabled = true },
+            },
+          },
         },
 
         -- Language server `initializationOptions`
