@@ -1,4 +1,4 @@
-require('lazy').setup {
+return {
   {
     'mfussenegger/nvim-jdtls',
     ft = { 'java' },
@@ -6,6 +6,7 @@ require('lazy').setup {
       local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
       local workspace_dir = '/home/jirka/development/jdtls_data/' .. project_name
       local lombok_path = '/home/jirka/.local/share/lombok/lombok.jar'
+      local dap_path = '/home/jirka/.local/share/nvim/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar'
       local config = {
         -- The command that starts the language server
         -- See: https://github.com/eclipse/eclipse.jdt.ls#running-from-the-command-line
@@ -54,6 +55,7 @@ require('lazy').setup {
         -- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
         -- for a list of options
         settings = {
+          filetypes = { 'java' },
           java = {
             compilation = {
               annotationProcessing = { enabled = true },
@@ -69,7 +71,7 @@ require('lazy').setup {
         --
         -- If you don't plan on using the debugger or other eclipse.jdt.ls plugins you can remove this
         init_options = {
-          bundles = {},
+          bundles = { vim.fn.glob(dap_path) },
         },
       }
       -- This starts a new client & server,
