@@ -1,7 +1,6 @@
 return {
   {
     'mfussenegger/nvim-jdtls',
-    ft = { 'java' },
     config = function()
       local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
       local workspace_dir = '/home/jirka/development/jdtls_data/' .. project_name
