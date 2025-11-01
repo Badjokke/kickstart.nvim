@@ -111,6 +111,13 @@ return {
     dap.configurations.go = {
       {
         type = 'go',
+        name = 'Launch Go module',
+        request = 'launch',
+        program = '${workspaceFolder}',
+        console = 'integratedTerminal',
+      },
+      {
+        type = 'go',
         name = 'Launch Go file',
         request = 'launch',
         program = '${file}',
