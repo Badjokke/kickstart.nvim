@@ -18,20 +18,19 @@ return {
           '-Declipse.product=org.eclipse.jdt.ls.core.product',
           '-Dlog.protocol=true',
           '-Dlog.level=ALL',
-          '-Xmx1g',
+          '-Xmx2g',
           '--add-modules=ALL-SYSTEM',
           '--add-opens',
           'java.base/java.util=ALL-UNNAMED',
           '--add-opens',
           'java.base/java.lang=ALL-UNNAMED',
-
+          '-javaagent:' .. lombok_path,
           -- 💀
           '-jar',
           '/home/jirka/.local/share/nvim/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_1.7.0.v20250519-0528.jar',
           -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                       ^^^^^^^^^^^^^^
           -- Must point to the                                                     Change this to
           -- eclipse.jdt.ls installation                                           the actual version
-          '-javaagent:' .. lombok_path,
           -- 💀
           '-configuration',
           '/home/jirka/.local/share/nvim/mason/packages/jdtls/config_linux',

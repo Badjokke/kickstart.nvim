@@ -670,7 +670,6 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        jdtls = {},
         gopls = {
           filetypes = { 'go' },
         },
@@ -773,7 +772,7 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
+        local disable_filetypes = { c = true, cpp = true, java = true }
         if disable_filetypes[vim.bo[bufnr].filetype] then
           return nil
         else
@@ -823,7 +822,9 @@ require('lazy').setup({
           --   end,
           -- },
         },
-        opts = {},
+        opts = {
+          'super-tab',
+        },
       },
       'folke/lazydev.nvim',
     },
