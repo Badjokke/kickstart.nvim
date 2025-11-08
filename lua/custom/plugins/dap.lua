@@ -77,6 +77,7 @@ return {
         args = { 'dap', '-l', addr .. ':' .. dap_port },
         stdio = { nil, stdout, stderr },
       }, function(code)
+        print('exit code', code)
         handler:close()
         stdout:close()
         stderr:close()

@@ -1,11 +1,16 @@
 return {
   {
     'mfussenegger/nvim-jdtls',
+    ft = { 'java' },
     config = function()
       local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
-      local workspace_dir = '/home/jirka/development/jdtls_data/' .. project_name
-      local lombok_path = '/home/jirka/.local/share/lombok/lombok.jar'
-      local dap_path = '/home/jirka/.local/share/nvim/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar'
+      local workspace_dir = vim.fn.expand('~//development/jdtls_data/' .. project_name)
+      local root_markers = { '.git', 'mvnw', 'gradlew', 'pom.xml', 'build.gradle' }
+      local lombok_path = vim.fn.expand '~/.local/share/lombok/lombok.jar'
+      local dap_path = vim.fn.expand '~/.local/share/nvim/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar'
+      local test_path = vim.fn.expand '~/.local/share/nvim/mason/packages/java-test/extension/server/*.jar'
+      local bundles = { vim.fn.glob(dap_path) }
+      vim.list_extend(bundles, vim.fn.split(test_path, '\n', false))
       local config = {
         -- The command that starts the language server
         -- See: https://github.com/eclipse/eclipse.jdt.ls#running-from-the-command-line
@@ -27,13 +32,13 @@ return {
           '-javaagent:' .. lombok_path,
           -- 💀
           '-jar',
-          '/home/jirka/.local/share/nvim/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_1.7.0.v20250519-0528.jar',
+          vim.fn.expand '~/.local/share/nvim/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_1.7.100.v20251014-1222.jar',
           -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                       ^^^^^^^^^^^^^^
           -- Must point to the                                                     Change this to
           -- eclipse.jdt.ls installation                                           the actual version
           -- 💀
           '-configuration',
-          '/home/jirka/.local/share/nvim/mason/packages/jdtls/config_linux',
+          vim.fn.expand '~/.local/share/nvim/mason/packages/jdtls/config_linux',
           -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^        ^^^^^^
           -- Must point to the                      Change to one of `linux`, `win` or `mac`
           -- eclipse.jdt.ls installation            Depending on your system.
@@ -47,18 +52,18 @@ return {
         -- 💀
         -- This is the default if not provided, you can remove it. Or adjust as needed.
         -- One dedicated LSP server & client will be started per unique root_dir
-        root_dir = require('jdtls.setup').find_root { '.git', 'mvnw', 'gradlew' },
+        root_dir = require('jdtls.setup').find_root(root_markers),
 
         -- Here you can configure eclipse.jdt.ls specific settings
         -- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
         -- for a list of options
         settings = {
-          filetypes = { 'java' },
           java = {
             compilation = {
               annotationProcessing = { enabled = true },
             },
           },
+          signatureHelp = { enabled = true },
         },
 
         -- Language server `initializationOptions`
@@ -69,7 +74,7 @@ return {
         --
         -- If you don't plan on using the debugger or other eclipse.jdt.ls plugins you can remove this
         init_options = {
-          bundles = { vim.fn.glob(dap_path) },
+          bundles = bundles,
         },
       }
       -- This starts a new client & server,
