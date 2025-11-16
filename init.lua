@@ -584,13 +584,27 @@ require('lazy').setup({
               return client.supports_method(method, { bufnr = bufnr })
             end
           end
-
+          local function set_jdtls_keybinds()
+            map('gro', function()
+              require('jdtls').organize_imports()
+            end, 'Organize java imports')
+            map('<leader>t', function()
+              require('jdtls').test_nearest_method()
+            end, 'Test method nearest to the cursor')
+            map('<leader>tc', function()
+              require('jdtls').test_class()
+            end, 'Test method nearest to the cursor')
+          end
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
           --    See `:help CursorHold` for information about when this is executed
           --
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
+          -- java specific keybinds when jdtls attaches
+          if client and client.name == 'jdtls' then
+            set_jdtls_keybinds()
+          end
           if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {

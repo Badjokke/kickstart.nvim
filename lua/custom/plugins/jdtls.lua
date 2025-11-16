@@ -4,7 +4,7 @@ return {
     ft = { 'java' },
     config = function()
       local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
-      local workspace_dir = vim.fn.expand('~//development/jdtls_data/' .. project_name)
+      local workspace_dir = vim.fn.expand('~/development/jdtls_data/' .. project_name)
       local root_markers = { '.git', 'mvnw', 'gradlew', 'pom.xml', 'build.gradle' }
       local lombok_path = vim.fn.expand '~/.local/share/lombok/lombok.jar'
       local dap_path = vim.fn.expand '~/.local/share/nvim/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar'
