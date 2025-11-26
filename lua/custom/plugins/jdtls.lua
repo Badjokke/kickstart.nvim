@@ -3,9 +3,11 @@ return {
     'mfussenegger/nvim-jdtls',
     ft = { 'java' },
     config = function()
-      local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
-      local workspace_dir = vim.fn.expand('~/development/jdtls_data/' .. project_name)
       local root_markers = { '.git', 'mvnw', 'gradlew', 'pom.xml', 'build.gradle' }
+      local root_dir = require('jdtls.setup').find_root(root_markers)
+      local project_name = vim.fn.fnamemodify(root_dir, ':p:h:t')
+      local workspace_dir = vim.fn.expand('~/development/jdtls_data/' .. project_name)
+
       local lombok_path = vim.fn.expand '~/.local/share/lombok/lombok.jar'
       local dap_path = vim.fn.expand '~/.local/share/nvim/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar'
       local test_path = vim.fn.expand '~/.local/share/nvim/mason/packages/java-test/extension/server/*.jar'
@@ -15,7 +17,6 @@ return {
         -- The command that starts the language server
         -- See: https://github.com/eclipse/eclipse.jdt.ls#running-from-the-command-line
         cmd = {
-
           -- 💀
           '/usr/lib/jvm/java-21-openjdk-amd64/bin/java', -- or '/path/to/java17_or_newer/bin/java'
           '-Declipse.application=org.eclipse.jdt.ls.core.id1',
@@ -32,7 +33,7 @@ return {
           '-javaagent:' .. lombok_path,
           -- 💀
           '-jar',
-          vim.fn.expand '~/.local/share/nvim/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_1.7.100.v20251014-1222.jar',
+          vim.fn.glob '~/.local/share/nvim/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_*.jar',
           -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^                                       ^^^^^^^^^^^^^^
           -- Must point to the                                                     Change this to
           -- eclipse.jdt.ls installation                                           the actual version
@@ -48,11 +49,10 @@ return {
           '-data',
           workspace_dir,
         },
-
+        root_dir = root_dir,
         -- 💀
         -- This is the default if not provided, you can remove it. Or adjust as needed.
         -- One dedicated LSP server & client will be started per unique root_dir
-        root_dir = require('jdtls.setup').find_root(root_markers),
 
         -- Here you can configure eclipse.jdt.ls specific settings
         -- See https://github.com/eclipse/eclipse.jdt.ls/wiki/Running-the-JAVA-LS-server-from-the-command-line#initialize-request
@@ -62,8 +62,8 @@ return {
             compilation = {
               annotationProcessing = { enabled = true },
             },
+            signatureHelp = { enabled = true },
           },
-          signatureHelp = { enabled = true },
         },
 
         -- Language server `initializationOptions`

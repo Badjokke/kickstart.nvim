@@ -48,12 +48,6 @@ return {
     dap.listeners.after.event_initialized['dapui_config'] = function()
       dapui.open()
     end
-    dap.listeners.before.event_terminated['dapui_config'] = function()
-      dapui.close()
-    end
-    dap.listeners.before.event_exited['dapui_config'] = function()
-      dapui.close()
-    end
 
     local code_lldb_adapter_path = vim.fn.expand '~/.local/share/nvim/mason/packages/codelldb/extension/adapter/codelldb'
     local go_adapter_path = vim.fn.expand '~/go/bin/dlv'
