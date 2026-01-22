@@ -18,7 +18,7 @@ return {
         -- See: https://github.com/eclipse/eclipse.jdt.ls#running-from-the-command-line
         cmd = {
           -- 💀
-          '/usr/lib/jvm/java-21-openjdk-amd64/bin/java', -- or '/path/to/java17_or_newer/bin/java'
+          '/usr/bin/java', -- or '/path/to/java17_or_newer/bin/java'
           '-Declipse.application=org.eclipse.jdt.ls.core.id1',
           '-Dosgi.bundles.defaultStartLevel=4',
           '-Declipse.product=org.eclipse.jdt.ls.core.product',
@@ -30,7 +30,6 @@ return {
           'java.base/java.util=ALL-UNNAMED',
           '--add-opens',
           'java.base/java.lang=ALL-UNNAMED',
-          '-javaagent:' .. lombok_path,
           -- 💀
           '-jar',
           vim.fn.glob '~/.local/share/nvim/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_*.jar',

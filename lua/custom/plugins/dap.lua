@@ -50,7 +50,7 @@ return {
     end
 
     local code_lldb_adapter_path = vim.fn.expand '~/.local/share/nvim/mason/packages/codelldb/extension/adapter/codelldb'
-    local go_adapter_path = vim.fn.expand '~/go/bin/dlv'
+    local go_adapter_path = vim.fn.expand '/opt/homebrew/bin/dlv'
 
     dap.adapters.go = function(callback, config)
       if config.request == 'attach' and config.mode == 'remote' and config.host then
