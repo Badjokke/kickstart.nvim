@@ -8,7 +8,7 @@ return {
       local project_name = vim.fn.fnamemodify(root_dir, ':p:h:t')
       local workspace_dir = vim.fn.expand('~/development/jdtls_data/' .. project_name)
 
-      local lombok_path = vim.fn.expand '~/.local/share/lombok/lombok.jar'
+      local lombok_path = vim.fn.expand '~/.local/share/nvim/mason/packages/jdtls/lombok.jar'
       local dap_path = vim.fn.expand '~/.local/share/nvim/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar'
       local test_path = vim.fn.expand '~/.local/share/nvim/mason/packages/java-test/extension/server/*.jar'
       local bundles = { vim.fn.glob(dap_path) }
@@ -30,6 +30,7 @@ return {
           'java.base/java.util=ALL-UNNAMED',
           '--add-opens',
           'java.base/java.lang=ALL-UNNAMED',
+          '-javaagent:' .. lombok_path,
           -- 💀
           '-jar',
           vim.fn.glob '~/.local/share/nvim/mason/packages/jdtls/plugins/org.eclipse.equinox.launcher_*.jar',
@@ -38,7 +39,7 @@ return {
           -- eclipse.jdt.ls installation                                           the actual version
           -- 💀
           '-configuration',
-          vim.fn.expand '~/.local/share/nvim/mason/packages/jdtls/config_linux',
+          vim.fn.expand '~/.local/share/nvim/mason/packages/jdtls/config_mac',
           -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^        ^^^^^^
           -- Must point to the                      Change to one of `linux`, `win` or `mac`
           -- eclipse.jdt.ls installation            Depending on your system.
