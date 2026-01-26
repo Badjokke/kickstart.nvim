@@ -2,6 +2,7 @@ return {
   {
     'mfussenegger/nvim-jdtls',
     ft = { 'java' },
+    lazy = true,
     config = function()
       local root_markers = { '.git', 'mvnw', 'gradlew', 'pom.xml', 'build.gradle' }
       local root_dir = require('jdtls.setup').find_root(root_markers)
