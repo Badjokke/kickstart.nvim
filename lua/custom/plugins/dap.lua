@@ -87,6 +87,28 @@ return {
 
     local code_lldb_adapter_path = vim.fn.expand '~/.local/share/nvim/mason/packages/codelldb/extension/adapter/codelldb'
     local go_adapter_path = vim.fn.expand '~/go/bin/dlv'
+    local python_adapter = vim.fn.expand '~/.local/share/nvim/mason/packages/debugpy/debugpy-adapter'
+
+    dap.adapters.python = function(cb, config)
+      if config.request == 'attach' then
+        cb {
+          type = 'server',
+          port = (config.connection or config).port,
+          host = (config.connection or config).host,
+          options = {
+            source_filetype = 'python',
+          },
+        }
+      else
+        cb {
+          type = 'executable',
+          command = python_adapter,
+          options = {
+            source_filetype = 'python',
+          },
+        }
+      end
+    end
 
     dap.adapters.go = function(callback, config)
       if config.request == 'attach' and config.mode == 'remote' and config.host then
@@ -134,11 +156,13 @@ return {
         callback { type = 'server', host = addr, port = dap_port }
       end, 1000)
     end
+
     dap.adapters.lldb = {
       type = 'executable',
       command = code_lldb_adapter_path,
       name = 'lldb',
     }
+
     dap.configurations.go = {
       {
         type = 'go',
@@ -162,8 +186,28 @@ return {
         request = 'launch',
         console = 'integratedTerminal',
         program = function()
-          return vim.fn.input('Executable name', vim.fn.getcwd())
+          return vim.fn.input('Executable name', '/target/debug/' .. vim.fn.getcwd())
         end,
+      },
+    }
+    dap.configurations.python = {
+      {
+        name = 'Launch file',
+        type = 'python',
+        request = 'launch',
+        program = '${file}',
+        console = 'integratedTerminal',
+      },
+      {
+        type = 'python',
+        request = 'launch',
+        name = 'Launch file with arguments',
+        program = '${file}',
+        args = function()
+          local args_string = vim.fn.input 'Arguments: '
+          return vim.split(args_string, ' +')
+        end,
+        console = 'integratedTerminal',
       },
     }
   end,

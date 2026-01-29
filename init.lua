@@ -688,7 +688,7 @@ require('lazy').setup({
           filetypes = { 'go' },
         },
         -- clangd = {},
-        -- pyright = {},
+        basedpyright = {},
         rust_analyzer = {
           root_dir = function(fname)
             local cargo = util.root_pattern 'Cargo.toml'(fname)
