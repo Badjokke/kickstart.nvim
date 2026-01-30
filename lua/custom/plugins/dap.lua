@@ -39,12 +39,48 @@ return {
         require('dap').toggle_breakpoint()
       end,
     },
+    {
+      mode = { 'n', 'v' },
+      '<leader>i',
+      function()
+        require('dapui').eval()
+        require('dapui').eval()
+      end,
+      desc = 'Evaluate expression',
+    },
+    {
+      '<leader>e',
+      function()
+        require('dapui').eval(vim.fn.input 'Expression: ', nil)
+      end,
+      desc = 'Evaluate expression',
+    },
   },
   config = function()
     local dapui = require 'dapui'
     local dap = require 'dap'
-    dapui.setup()
-
+    dapui.setup {
+      layouts = {
+        {
+          elements = {
+            { id = 'console', size = 0.8 },
+            { id = 'repl', size = 0.2 },
+          },
+          position = 'bottom',
+          size = 15,
+        },
+        {
+          elements = {
+            { id = 'scopes', size = 0.50 },
+            { id = 'breakpoints', size = 0.20 },
+            { id = 'stacks', size = 0.15 },
+            { id = 'watches', size = 0.15 },
+          },
+          position = 'left',
+          size = 50,
+        },
+      },
+    }
     dap.listeners.after.event_initialized['dapui_config'] = function()
       dapui.open()
     end
