@@ -186,7 +186,7 @@ return {
         request = 'launch',
         console = 'integratedTerminal',
         program = function()
-          return vim.fn.input('Executable name', '/target/debug/' .. vim.fn.getcwd())
+          return vim.fn.input('Executable name: ', vim.fn.getcwd())
         end,
       },
     }
