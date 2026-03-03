@@ -684,7 +684,7 @@ require('lazy').setup({
         gopls = {
           filetypes = { 'go' },
         },
-        -- clangd = {},
+        clangd = {},
         basedpyright = {},
         rust_analyzer = {
           root_dir = function(fname)
@@ -1025,7 +1025,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.config', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'rust', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'java' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'go', 'lua', 'rust', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'java' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
