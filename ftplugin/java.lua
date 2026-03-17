@@ -2,10 +2,15 @@ local lombok_path = vim.fn.expand '~/.local/share/nvim/mason/packages/jdtls/lomb
 local dap_path = vim.fn.expand '~/.local/share/nvim/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar'
 local test_path = vim.fn.expand '~/.local/share/nvim/mason/packages/java-test/extension/server/*.jar'
 local bundles = { vim.fn.glob(dap_path) }
-local root_markers = { '.git', 'mvnw', 'gradlew', 'pom.xml', 'build.gradle' }
-local root_dir = require('jdtls.setup').find_root(root_markers)
-local project_name = vim.fn.fnamemodify(root_dir, ':p:h:t')
-local workspace_dir = vim.fn.expand('~/development/jdtls_data/' .. project_name)
+local root_dir = vim.fs.root(0, { '.git' })
+local project_dir = vim.fs.root(0, { 'mvnw', 'gradlew' })
+local project_name = vim.fn.fnamemodify(root_dir, ':p:t:h')
+
+local function get_data_dir()
+  local workspace_dir = vim.fn.expand '~/development/jdtls_data'
+  local data_dir = workspace_dir .. '/' .. string.gsub(vim.fn.getcwd(), '/', '_')
+  return data_dir
+end
 
 local config = {
   name = 'jdtls',
@@ -45,7 +50,7 @@ local config = {
     -- 💀
     -- See `data directory configuration` section in the README
     '-data',
-    workspace_dir,
+    get_data_dir(),
   },
   -- 💀
   -- This is the default if not provided, you can remove it. Or adjust as needed.
@@ -59,7 +64,13 @@ local config = {
       compilation = {
         annotationProcessing = { enabled = true },
       },
+      autobuild = { enabled = true },
+      maven = { downloadSources = true },
+      inlayHints = {
+        parameterNames = { enabled = 'all' },
+      },
       signatureHelp = { enabled = true },
+      implementationsCodeLens = { enabled = true },
     },
   },
   -- Language server `initializationOptions`
