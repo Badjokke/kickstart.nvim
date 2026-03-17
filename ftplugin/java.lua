@@ -1,8 +1,22 @@
 local lombok_path = vim.fn.expand '~/.local/share/nvim/mason/packages/jdtls/lombok.jar'
 local dap_path = vim.fn.expand '~/.local/share/nvim/mason/packages/java-debug-adapter/extension/server/com.microsoft.java.debug.plugin-*.jar'
-local test_path = vim.fn.expand '~/.local/share/nvim/mason/packages/java-test/extension/server/*.jar'
-local bundles = { vim.fn.glob(dap_path) }
+local test_path = vim.fn.expand '~/.local/share/nvim/mason/packages/java-test/extension/server/com.microsoft.java.test.plugin-*.jar'
+
+local function glob_list(pattern)
+  local items = vim.fn.glob(pattern, true, true)
+  if type(items) == 'string' then
+    return items == '' and {} or { items }
+  end
+  return items or {}
+end
+
+local bundles = {}
+vim.list_extend(bundles, glob_list(dap_path))
+vim.list_extend(bundles, glob_list(test_path))
 local root_dir = vim.fs.root(0, { '.git' })
+if not root_dir then
+  return
+end
 local project_dir = vim.fs.root(0, { 'mvnw', 'gradlew' })
 local project_name = vim.fn.fnamemodify(root_dir, ':p:t:h')
 
@@ -16,7 +30,6 @@ local config = {
   name = 'jdtls',
   project_name = project_name,
   root_dir = root_dir,
-  vim.list_extend(bundles, vim.fn.split(test_path, '\n', false)),
   -- The command that starts the language server
   -- See: https://github.com/eclipse/eclipse.jdt.ls#running-from-the-command-line
   cmd = {
