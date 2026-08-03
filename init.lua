@@ -1,6 +1,7 @@
-vim.g.mapleader = ' '
+require("config")
+require("plugins")
 vim.g.have_nerd_font = true
-vim.cmd.colorscheme('habamax')
+vim.g.mapleader = ' '
 vim.opt.clipboard='unnamedplus'
 
 -- options
@@ -281,7 +282,7 @@ vim.keymap.set("n", "<leader>pa", function() -- show file path
 end, { desc = "Copy full file path" })
 
 
-
+local augroup = vim.api.nvim_create_augroup("UserConfig", { clear = true })
 
 -- autocommands
 
@@ -333,34 +334,38 @@ vim.pack.add({
 	"https://www.github.com/nvim-tree/nvim-tree.lua",
         "https://www.github.com/ibhagwan/fzf-lua",
         "https://github.com/nvim-mini/mini.nvim",
-
-
         "https://www.github.com/nvim-tree/nvim-tree.lua",
+        "https://github.com/mfussenegger/nvim-jdtls",
 	{
 		src = "https://github.com/nvim-treesitter/nvim-treesitter",
 		branch = "main",
 		build = ":TSUpdate",
 	},
+	"https://github.com/mason-org/mason.nvim",
+        "https://github.com/creativenull/efmls-configs-nvim",
 })
 
 -- ============================================================================
 -- PLUGINS CONFIG
 -- ============================================================================
-require("nvim-tree").setup({
-	view = {
-		width = 35,
-	},
-	filters = {
-		dotfiles = false,
-	},
-	renderer = {
-		group_empty = true,
-	},
-})
-vim.keymap.set("n", "<leader>pt", function()
-	require("nvim-tree.api").tree.toggle()
-end, { desc = "Toggle NvimTree" })
+local setup_nvimtree = function()
+        require("nvim-tree").setup({
+                view = {
+                        width = 35,
+                },
+                filters = {
+                        dotfiles = false,
+                },
+                renderer = {
+                        group_empty = true,
+                },
+        })
+        vim.keymap.set("n", "<leader>pt", function()
+                require("nvim-tree.api").tree.toggle()
+        end, { desc = "Toggle NvimTree" })
 
+end
+setup_nvimtree()
 
 -- fuzzy finder
 require("fzf-lua").setup({})
@@ -415,11 +420,11 @@ end, { desc = "Next git hunk" })
 vim.keymap.set("n", "[h", function()
 	MiniDiff.goto_hunk("prev")
 end, { desc = "Prev git hunk" })
-vim.keymap.set("n", "<leader>hs", MiniDiff.operator, { desc = "Stage hunk" })
-vim.keymap.set("n", "<leader>hp", function()
+vim.keymap.set("n", "<leader>gs", MiniDiff.operator, { desc = "Stage hunk" })
+vim.keymap.set("n", "<leader>gd", function()
 	MiniDiff.toggle_overlay()
 end, { desc = "Preview diff overlay" })
-vim.keymap.set("n", "<leader>hb", function()
+vim.keymap.set("n", "<leader>gb", function()
 	require("mini.git").show_at_cursor()
 end, { desc = "Git blame/show" })
 
@@ -477,3 +482,111 @@ local setup_treesitter = function()
 end
 
 setup_treesitter()
+
+
+require("mason").setup({})
+-- diagnostics
+local diagnostic_signs = {
+	Error = "\u{f057} ",
+	Warn = "\u{f071} ",
+	Hint = "\u{ea61}",
+	Info = "\u{f05a}",
+}
+
+vim.diagnostic.config({
+	virtual_text = { prefix = "●", spacing = 4 },
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = diagnostic_signs.Error,
+			[vim.diagnostic.severity.WARN] = diagnostic_signs.Warn,
+			[vim.diagnostic.severity.INFO] = diagnostic_signs.Info,
+			[vim.diagnostic.severity.HINT] = diagnostic_signs.Hint,
+		},
+	},
+	underline = true,
+	update_in_insert = false,
+	severity_sort = true,
+	float = {
+		border = "rounded",
+		source = true,
+		header = "",
+		prefix = "",
+		focusable = false,
+		style = "minimal",
+	},
+})
+
+local function lsp_on_attach(ev)
+	local client = vim.lsp.get_client_by_id(ev.data.client_id)
+	if not client then
+		return
+	end
+
+	local bufnr = ev.buf
+	local opts = { noremap = true, silent = true, buffer = bufnr }
+
+	vim.keymap.set("n", "gd", function()
+		require("fzf-lua").lsp_definitions({ jump_1 = true })
+	end, opts)
+        vim.keymap.set("n", "gi", function()
+		require("fzf-lua").lsp_implementations()
+	end, opts)
+	vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+
+	vim.keymap.set("n", "gS", function()
+		vim.cmd("vsplit")
+		vim.lsp.buf.definition()
+	end, opts)
+
+	vim.keymap.set("n", "gra", vim.lsp.buf.code_action, opts)
+	vim.keymap.set("n", "rn", vim.lsp.buf.rename, opts)
+
+	vim.keymap.set("n", "<leader>e", function()
+		vim.diagnostic.open_float({ scope = "line" })
+	end, opts)
+	vim.keymap.set("n", "<leader>d", function()
+		vim.diagnostic.open_float({ scope = "cursor" })
+	end, opts)
+	vim.keymap.set("n", "<leader>nd", function()
+		vim.diagnostic.jump({ count = 1 })
+	end, opts)
+
+	vim.keymap.set("n", "<leader>pd", function()
+		vim.diagnostic.jump({ count = -1 })
+	end, opts)
+
+	vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+	vim.keymap.set("n", "gr", function()
+		require("fzf-lua").lsp_references()
+	end, opts)
+	vim.keymap.set("n", "<leader>gt", function()
+		require("fzf-lua").lsp_typedefs()
+	end, opts)
+	vim.keymap.set("n", "<leader>gs", function()
+		require("fzf-lua").lsp_document_symbols()
+	end, opts)
+	vim.keymap.set("n", "<leader>gw", function()
+		require("fzf-lua").lsp_workspace_symbols()
+	end, opts)
+	if client:supports_method("textDocument/codeAction", bufnr) then
+		vim.keymap.set("n", "gro", function()
+			vim.lsp.buf.code_action({
+				context = { only = { "source.organizeImports" }, diagnostics = {} },
+				apply = true,
+				bufnr = bufnr,
+			})
+			vim.defer_fn(function()
+				vim.lsp.buf.format({ bufnr = bufnr })
+			end, 50)
+		end, opts)
+	end
+end
+
+vim.api.nvim_create_autocmd("LspAttach", { group = augroup, callback = lsp_on_attach })
+
+vim.keymap.set("n", "<leader>q", function()
+	vim.diagnostic.setloclist({ open = true })
+end, { desc = "Open diagnostic list" })
+vim.keymap.set("n", "<leader>dl", vim.diagnostic.open_float, { desc = "Show line diagnostics" })
+
+vim.lsp.enable({"lua_ls", "bashls", "clangd", "pyright"})
