@@ -1,4 +1,3 @@
----@type vim.lsp.Config
 local function is_dependency_root(path)
   return path:find("/rustlib/src/rust/library/", 1, true) ~= nil
     or path:find("/vendor/", 1, true) ~= nil
@@ -13,6 +12,7 @@ local function active_project_root()
   end
 end
 
+---@type vim.lsp.Config
 return {
   cmd = { "rust-analyzer" },
   filetypes = { "rust" },
