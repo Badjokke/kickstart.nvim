@@ -589,4 +589,4 @@ vim.keymap.set("n", "<leader>q", function()
 end, { desc = "Open diagnostic list" })
 vim.keymap.set("n", "<leader>dl", vim.diagnostic.open_float, { desc = "Show line diagnostics" })
 
-vim.lsp.enable({ "lua_ls", "bashls", "clangd", "pyright", "rust_analyzer", "terraformls", "dockerls" })
+vim.lsp.enable({ "lua_ls", "bashls", "clangd", "pyright", "rust_analyzer", "terraformls", "dockerls", "lemminx" })
